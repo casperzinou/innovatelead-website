@@ -1,7 +1,7 @@
 // script.js - Corrected Final Production Code
 (() => {
     // --- CONFIGURATION ---
-    const API_BASE_URL = 'https://your-api.onrender.com'; // IMPORTANT: Update this to your deployed Render URL
+    const API_BASE_URL = 'https://innovatelead-api.onrender.com'; // IMPORTANT: Update this to your deployed Render URL
 
     // --- SCRIPT INITIALIZATION ---
     const scriptTag = document.currentScript;
