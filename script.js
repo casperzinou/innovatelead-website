@@ -1,185 +1,304 @@
-// script.js - Final Production Version (Self-Contained)
-
+// script.js - Corrected Final Production Code
 (() => {
-    // This is an IIFE (Immediately Invoked Function Expression)
-    // It prevents our code from conflicting with the client's website's code.
+    // --- CONFIGURATION ---
+    const API_BASE_URL = 'https://your-api.onrender.com'; // IMPORTANT: Update this to your deployed Render URL
 
-    // --- 1. CONFIGURATION ---
-    const SCRIPT_TAG = document.querySelector('script[data-client-id]');
-    const CLIENT_ID = SCRIPT_TAG ? SCRIPT_TAG.dataset.clientId : null;
-    
-    // IMPORTANT: Change this to your live Render URL before the final deployment
-    const API_DOMAIN = 'https://innovatelead-api.onrender.com'; 
-    
-    const ASK_API_URL = `${API_DOMAIN}/ask`;
-    const TICKET_API_URL = `${API_DOMAIN}/create_ticket`;
-    const INITIAL_BOT_MESSAGE = "Hello! I'm a smart assistant. How can I help you today?";
+    // --- SCRIPT INITIALIZATION ---
+    const scriptTag = document.currentScript;
+    const clientId = scriptTag.dataset.clientId;
 
-    if (!CLIENT_ID) {
-        console.error("Chatbot Error: Client ID is missing. Add 'data-client-id' to your script tag.");
-        return; // Stop the script if the client ID is not found
+    if (!clientId) {
+        console.error("Chatbot Error: 'data-client-id' is missing from the script tag.");
+        return;
     }
-
-    // --- 2. DYNAMICALLY CREATE THE CHATBOT'S HTML AND CSS ---
     
-    // The full HTML structure of the chat widget
-    const chatWidgetHTML = `
-        <div class="chat-widget">
-            <div class="chat-window" id="chat-window">
-                <div class="chat-header">
-                    <h2>Chat with us!</h2>
-                    <button class="close-btn" id="close-chat-btn" aria-label="Close chat">&times;</button>
-                </div>
-                <div class="chat-body" id="chat-body"></div>
-                <div class="chat-footer">
-                    <form id="chat-form" style="display: flex; flex: 1;">
-                        <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off" required>
-                        <button type="submit" id="send-message-btn">Send</button>
-                    </form>
-                </div>
-            </div>
-            <button class="chat-icon-btn" id="chat-icon-btn" aria-label="Open chat">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32px" height="32px">
-                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                </svg>
-            </button>
+    // --- STATE MANAGEMENT ---
+    let botState = 'IDLE'; // States: IDLE, AWAITING_TICKET_CONFIRMATION, AWAITING_EMAIL
+    let lastUserMessage = ''; // Store the last user question for ticketing
+
+    // --- INJECT STYLES ---
+    const styles = `
+        :root {
+            --chatbot-primary: #007bff;
+            --chatbot-light: #f8f9fa;
+            --chatbot-dark: #343a40;
+            --chatbot-white: #ffffff;
+            --chatbot-radius: 8px;
+            --chatbot-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        #chatbot-bubble {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--chatbot-primary);
+            color: var(--chatbot-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: var(--chatbot-shadow);
+            transition: transform 0.2s ease-in-out;
+            z-index: 9998;
+        }
+        #chatbot-bubble:hover {
+            transform: scale(1.1);
+        }
+        #chatbot-widget {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-width: 90vw;
+            height: 500px;
+            max-height: 80vh;
+            background-color: var(--chatbot-white);
+            border-radius: var(--chatbot-radius);
+            box-shadow: var(--chatbot-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.5);
+            opacity: 0;
+            pointer-events: none;
+            transform-origin: bottom right;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+            z-index: 9999;
+        }
+        #chatbot-widget.open {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .chatbot-header {
+            background-color: var(--chatbot-primary);
+            color: var(--chatbot-white);
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .chatbot-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .chatbot-message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        .chatbot-message.user {
+            background-color: #e9ecef;
+            color: var(--chatbot-dark);
+            align-self: flex-end;
+            border-bottom-right-radius: 3px;
+        }
+        .chatbot-message.bot {
+            background-color: var(--chatbot-primary);
+            color: var(--chatbot-white);
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+        }
+         .chatbot-message.bot.loading {
+            display: flex;
+            align-items: center;
+        }
+        .chatbot-message.bot.loading span {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            background-color: #fff;
+            animation: bounce 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+        .chatbot-message.bot.loading span:nth-child(1) { animation-delay: -0.32s; }
+        .chatbot-message.bot.loading span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+        .chatbot-input-area {
+            border-top: 1px solid #dee2e6;
+            padding: 10px;
+            display: flex;
+        }
+        #chatbot-input {
+            flex-grow: 1;
+            border: 1px solid #ced4da;
+            border-radius: var(--chatbot-radius);
+            padding: 10px;
+            font-size: 16px;
+        }
+        #chatbot-send-btn {
+            background-color: var(--chatbot-primary);
+            color: var(--chatbot-white);
+            border: none;
+            border-radius: var(--chatbot-radius);
+            padding: 0 15px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    `;
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+
+    // --- INJECT HTML ---
+    const chatBubble = document.createElement("div");
+    chatBubble.id = "chatbot-bubble";
+    chatBubble.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+            <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+        </svg>
+    `;
+
+    const chatWidget = document.createElement("div");
+    chatWidget.id = "chatbot-widget";
+    chatWidget.innerHTML = `
+        <div class="chatbot-header">AI Assistant</div>
+        <div class="chatbot-messages"></div>
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="Ask a question...">
+            <button id="chatbot-send-btn">➤</button>
         </div>
     `;
+    document.body.appendChild(chatBubble);
+    document.body.appendChild(chatWidget);
 
-    // The full CSS needed to style the chat widget
-    const chatWidgetCSS = `
-        .chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 1000; font-family: sans-serif; }
-        .chat-window { width: 350px; max-height: 500px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; background-color: #ffffff; margin-bottom: 15px; transform: translateY(20px) scale(0.95); opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out; }
-        .chat-window.open { transform: translateY(0) scale(1); opacity: 1; visibility: visible; }
-        .chat-header { background-color: #0A2540; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .chat-header h2 { margin: 0; font-size: 1.2em; }
-        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-        .chat-body { flex: 1; padding: 15px; overflow-y: auto; background-color: #f9f9f9; display: flex; flex-direction: column; min-height: 300px; }
-        .message { max-width: 85%; margin-bottom: 10px; line-height: 1.4; }
-        .message p { padding: 10px 15px; border-radius: 18px; margin: 0; }
-        .message.received { align-self: flex-start; }
-        .message.received p { background-color: #e9e9eb; color: #333; }
-        .message.sent { align-self: flex-end; }
-        .message.sent p { background-color: #007bff; color: white; }
-        .chat-footer { display: flex; padding: 10px; border-top: 1px solid #ddd; }
-        #chat-input { flex: 1; border: 1px solid #ccc; border-radius: 20px; padding: 10px 15px; font-size: 1em; margin-right: 10px; }
-        #send-message-btn { background-color: #007bff; color: white; border: none; border-radius: 20px; padding: 0 15px; cursor: pointer; transition: background-color 0.2s; font-weight: bold; }
-        .chat-icon-btn { width: 60px; height: 60px; border-radius: 50%; background-color: #0A2540; color: white; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s; }
-        .chat-icon-btn:hover { transform: scale(1.1); }
-    `;
+    // --- GET DOM ELEMENTS ---
+    const messagesContainer = chatWidget.querySelector('.chatbot-messages');
+    const inputField = chatWidget.querySelector('#chatbot-input');
+    const sendButton = chatWidget.querySelector('#chatbot-send-btn');
+    
+    // --- FUNCTIONS & EVENT LISTENERS ---
+    const toggleWidget = () => chatWidget.classList.toggle('open');
+    chatBubble.addEventListener('click', toggleWidget);
 
-    // Inject the CSS into the page's <head>
-    const styleElement = document.createElement('style');
-    styleElement.textContent = chatWidgetCSS;
-    document.head.appendChild(styleElement);
+    const addMessage = (text, sender, options = {}) => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chatbot-message', sender);
 
-    // Inject the HTML into the page's <body>
-    document.body.insertAdjacentHTML('beforeend', chatWidgetHTML);
-
-    // --- 3. CORE CHATBOT LOGIC (This is the code you already perfected) ---
-    // Now that the HTML exists on the page, we can find the elements and add our logic.
-    let botState = 'READY_TO_CHAT';
-    let pendingQuestion = '';
-    const chatWindow = document.getElementById('chat-window');
-    const chatIconBtn = document.getElementById('chat-icon-btn');
-    const closeChatBtn = document.getElementById('close-chat-btn');
-    const chatBody = document.getElementById('chat-body');
-    const chatInput = document.getElementById('chat-input');
-    const chatForm = document.getElementById('chat-form');
-
-    // Add event listeners
-    chatIconBtn.addEventListener('click', () => chatWindow.classList.toggle('open'));
-    closeChatBtn.addEventListener('click', () => chatWindow.classList.remove('open'));
-    chatForm.addEventListener('submit', handleFormSubmission);
-
-    // All the functions that control the conversation
-    function handleFormSubmission(event) {
-        event.preventDefault();
-        const userInput = chatInput.value.trim();
-        if (userInput === '') return;
-        displayMessage(userInput, 'sent');
-        chatInput.value = '';
-        if (botState === 'READY_TO_CHAT') {
-            handleQuestion(userInput);
+        if (options.loading) {
+            messageElement.classList.add('loading');
+            messageElement.innerHTML = `<span></span><span></span><span></span>`;
         } else {
-            handleEmailSubmission(userInput);
+            messageElement.textContent = text;
         }
-    }
+        
+        messagesContainer.appendChild(messageElement);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        return messageElement;
+    };
+    
+    const handleSend = async () => {
+        const message = inputField.value.trim();
+        if (!message) return;
 
-    async function handleQuestion(question) {
+        addMessage(message, 'user');
+        inputField.value = '';
+        
+        // State-based conversation logic
+        if (botState === 'AWAITING_TICKET_CONFIRMATION') {
+            handleTicketConfirmation(message);
+        } else if (botState === 'AWAITING_EMAIL') {
+            handleEmailCollection(message);
+        } else {
+            // Default state: Answer a question
+            lastUserMessage = message; // Store for potential handoff
+            await getBotAnswer(message);
+        }
+    };
+    
+    const getBotAnswer = async (question) => {
+        const loadingIndicator = addMessage('', 'bot', { loading: true });
         try {
-            const response = await fetch(ASK_API_URL, {
+            const response = await fetch(`${API_BASE_URL}/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question, clientId: CLIENT_ID })
+                body: JSON.stringify({ question: question, clientId: clientId }) // CORRECTED KEY: 'question'
             });
-            const data = await response.json();
-            displayMessage(data.answer, 'received');
-            if (data.status === 'human_handoff') {
-                botState = 'WAITING_FOR_EMAIL';
-                pendingQuestion = question;
-                chatInput.placeholder = 'Please enter your email...';
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            displayMessage('Sorry, an error occurred.', 'received');
-        }
-    }
 
-    async function handleEmailSubmission(userInput) {
-        const cancelWords = ['no', 'cancel', 'stop', 'nevermind', 'no thanks', 'no thank you'];
-        if (cancelWords.includes(userInput.toLowerCase())) {
-            displayMessage("Okay, what else can I help you with?", 'received');
-            botState = 'READY_TO_CHAT';
-            pendingQuestion = '';
-            chatInput.placeholder = 'Ask another question...';
-            return;
+            messagesContainer.removeChild(loadingIndicator);
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || 'API Error');
+            
+            addMessage(data.answer, 'bot');
+            
+            // CORRECTED CHECK: For 'human_handoff' status
+            if (data.status === 'human_handoff') {
+                addMessage("Would you like me to create a support ticket for you so a human agent can get back to you? (yes/no)", 'bot');
+                botState = 'AWAITING_TICKET_CONFIRMATION';
+            }
+
+        } catch (error) {
+            console.error('Chatbot fetch error:', error);
+            messagesContainer.removeChild(loadingIndicator);
+            addMessage("Sorry, I'm having trouble connecting. Please try again later.", 'bot');
         }
-        if (!userInput.includes('@') || !userInput.includes('.')) {
-            displayMessage("That doesn't look like a valid email. Please try again, or type 'no' to cancel.", 'received');
-            return;
+    };
+    
+    const handleTicketConfirmation = (message) => {
+        const positiveResponse = /^(yes|yeah|yup|sure|ok|yep)\b/i.test(message);
+        const negativeResponse = /^(no|nope|nah)\b/i.test(message);
+
+        if (positiveResponse) {
+            addMessage("Great. What's the best email address to reach you at?", 'bot');
+            botState = 'AWAITING_EMAIL';
+        } else if (negativeResponse) {
+            addMessage("No problem. Is there anything else I can help you with?", 'bot');
+            botState = 'IDLE';
+        } else {
+            addMessage("Sorry, I didn't quite understand. Please answer with 'yes' or 'no'.", 'bot');
         }
-        const email = userInput;
-        displayMessage("Thank you. Creating a ticket for our team...", 'received');
-        chatInput.disabled = true;
+    };
+    
+    const handleEmailCollection = (email) => {
+        // Simple email validation
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            createTicket(lastUserMessage, email);
+        } else {
+            addMessage("That doesn't look like a valid email. Please provide a correct email address.", 'bot');
+        }
+    };
+
+    const createTicket = async (originalQuestion, userEmail) => {
+        addMessage("Creating a support ticket for you now...", 'bot');
+        botState = 'IDLE'; // Reset state
         try {
-            const response = await fetch(TICKET_API_URL, {
+            const response = await fetch(`${API_BASE_URL}/create_ticket`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    question: pendingQuestion,
-                    clientId: CLIENT_ID,
-                    email: email
+                // CORRECTED PAYLOAD: Includes email
+                body: JSON.stringify({ 
+                    question: originalQuestion, 
+                    email: userEmail,
+                    clientId: clientId 
                 })
             });
             const data = await response.json();
-            displayMessage(data.message, 'received');
+            if (!response.ok) throw new Error(data.error || "Server error");
+
+            addMessage("We've created a ticket and our team will get back to you at your provided email. Is there anything else I can help with?", 'bot');
+
         } catch (error) {
-            displayMessage('Sorry, there was an issue creating the ticket.', 'received');
-        } finally {
-            botState = 'READY_TO_CHAT';
-            pendingQuestion = '';
-            chatInput.placeholder = 'Ask another question...';
-            chatInput.disabled = false;
+            console.error('Ticket creation error:', error);
+            addMessage("I'm sorry, I couldn't create a ticket at this time. Please try again later.", 'bot');
         }
-    }
+    };
 
-    function displayMessage(text, type) {
-        const messageContainer = document.createElement('div');
-        messageContainer.className = `message ${type}`;
-        const p = document.createElement('p');
-        p.textContent = text;
-        messageContainer.appendChild(p);
-        chatBody.appendChild(messageContainer);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
+    sendButton.addEventListener('click', handleSend);
+    inputField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSend();
+    });
 
-    function initializeChat() {
-        chatBody.innerHTML = '';
-        displayMessage(INITIAL_BOT_MESSAGE, 'received');
-    }
-    
-    // Start the bot
-    initializeChat();
-
-})(); // End of the IIFE
+    // Initial greeting
+    addMessage("Hello! How can I help you today?", 'bot');
+})();
