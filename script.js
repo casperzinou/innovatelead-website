@@ -9,7 +9,7 @@
     const CLIENT_ID = SCRIPT_TAG ? SCRIPT_TAG.dataset.clientId : null;
     
     // IMPORTANT: Change this to your live Render URL before the final deployment
-    const API_DOMAIN = 'http://127.0.0.1:5000'; 
+    const API_DOMAIN = 'https://innovatelead-api.onrender.com'; 
     
     const ASK_API_URL = `${API_DOMAIN}/ask`;
     const TICKET_API_URL = `${API_DOMAIN}/create_ticket`;
