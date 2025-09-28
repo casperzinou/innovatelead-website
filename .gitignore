@@ -1,0 +1,61 @@
+# Dependencies & packages
+node_modules/
+vendor/
+*.zip
+*.tar.gz
+*.rar
+
+# Build & logs
+build/
+dist/
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# Web specific
+*.min.js
+*.min.css
+
+# Database
+*.db
+*.sqlite
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# API specific (if using Node.js)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+api/node_modules/
+api/dist/
+api/build/
+
+# Python specific (if using Python backend)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+.venv/
