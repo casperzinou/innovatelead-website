@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | MindWise</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ---------------------------------- */
+        /* ----- Global Styles & Reset ---- */
+        /* ---------------------------------- */
+        :root {
+            --bg-main: #F9FAFB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --accent-primary: #10B981;
+            --accent-primary-hover: #059669;
+            --border-color: #E5E7EB;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Layout & Containers ------ */
+        /* ---------------------------------- */
+        .container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        main > section {
+            padding: 96px 0;
+        }
+        
+        .section-centered {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Typography --------------- */
+        /* ---------------------------------- */
+        h1, h2, h3, h4 {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        h1 {
+            font-size: 56px;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 42px;
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 650px;
+        }
+
+        .sub-headline {
+            font-size: 20px;
+            margin-bottom: 64px;
+        }
+        
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--accent-primary-hover);
+        }
+
+        /* ---------------------------------- */
+        /* ----- Components --------------- */
+        /* ---------------------------------- */
+        .btn {
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-primary-hover);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* ---------------------------------- */
+        /* ----- Header / Navigation ------ */
+        /* ---------------------------------- */
+        .main-header {
+            background-color: rgba(249, 250, 251, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--text-primary);
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .main-nav a {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Pricing Section ---------- */
+        /* ---------------------------------- */
+        .pricing-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 600px;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .pricing-card .plan-name {
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .pricing-card .price {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+        
+        .pricing-card .price .period {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .features-list {
+            list-style: none;
+            margin: 32px 0;
+            text-align: left;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        
+        .features-list li svg {
+            color: var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        .pioneer-offer {
+            background-color: #ECFDF5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .pioneer-offer p {
+            font-size: 16px; 
+            color: #065F46;
+            margin: 0;
+        }
+        
+        .pioneer-offer strong {
+            color: #047857;
+        }
+
+        /* ---------------------------------- */
+        /* ----- FAQ Section -------------- */
+        /* ---------------------------------- */
+        .faq-section {
+            padding-top: 0; /* It follows the pricing section */
+        }
+        
+        .faq-container {
+            max-width: 768px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        
+        .faq-item {
+            border-top: 1px solid var(--border-color);
+            padding: 24px 0;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .faq-item p {
+            font-size: 16px;
+            max-width: 100%; /* Override default max-width for readability */
+        }
+        
+        /* ---------------------------------- */
+        /* ----- Footer ------------------- */
+        /* ---------------------------------- */
+        .main-footer {
+            padding: 48px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .main-footer p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0 auto;
+        }
+        
+        /* ---------------------------------- */
+        /* ----- Responsive Design -------- */
+        /* ---------------------------------- */
+        @media (max-width: 768px) {
+            main > section {
+                padding: 64px 0;
+            }
+            h2 { font-size: 30px; }
+            .sub-headline { font-size: 18px; margin-bottom: 48px; }
+            .main-nav { display: none; }
+            .pricing-card { padding: 32px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ======================= -->
+    <!--      Header             -->
+    <!-- ======================= -->
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" class="logo">MindWise</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Features</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <a href="register.html" class="btn btn-primary">Start Your $1 Trial</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ======================= -->
+        <!--    Pricing Section      -->
+        <!-- ======================= -->
+        <section id="pricing" class="section-centered">
+            <div class="container">
+                <h2>Simple, Transparent Pricing</h2>
+                <p class="sub-headline">One plan with everything you need to grow.</p>
+
+                <div class="pricing-card">
+                    <h3 class="plan-name">The MindWise Plan</h3>
+                    <p class="price">$99<span class="period"> / month</span></p>
+                    
+                    <a href="register.html" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 18px;">Start Your $1 Trial</a>
+
+                    <ul class="features-list">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Unlimited Website Visitors & Conversations
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Automatic Knowledge Base Sync
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Smart Human Handoff with AI Summaries
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Email Support Ticket Creation
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Simple One-Line Installation
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="pioneer-offer" style="max-width: 600px; width: 100%; margin: 32px auto 0 auto;">
+                    <p><strong>Limited Time Pioneer Offer:</strong> Get your <strong>First Month for just $1</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!--      FAQ Section        -->
+        <!-- ======================= -->
+        <section class="faq-section" id="faq">
+            <div class="container section-centered">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <h4>What happens after my $1 trial month?</h4>
+                        <p>After your first 30 days, your subscription will automatically continue at the standard rate of $99/month.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Can I cancel anytime?</h4>
+                        <p>Yes, absolutely. You can cancel your subscription at any time from your account dashboard with a single click. No questions asked.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>What kind of support is included?</h4>
+                        <p>The MindWise plan includes full email support from our founding team. We're committed to helping you succeed.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ======================= -->
+    <!--      Footer             -->
+    <!-- ======================= -->
+    <footer class="main-footer">
+        <div class="container">
+            <p>© 2025 MindWise. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+        </div>
+    </footer>
+
+</body>
+</html>

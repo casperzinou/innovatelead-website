@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindWise | AI Chatbot for Your Website</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ---------------------------------- */
+        /* ----- Global Styles & Reset ---- */
+        /* ---------------------------------- */
+        :root {
+            --bg-main: #F9FAFB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --accent-primary: #10B981;
+            --accent-primary-hover: #059669;
+            --border-color: #E5E7EB;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Layout & Containers ------ */
+        /* ---------------------------------- */
+        .container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        main > section {
+            padding: 96px 0;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Typography --------------- */
+        /* ---------------------------------- */
+        h1, h2, h3 {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        h1 {
+            font-size: 56px;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 650px; /* Readability */
+        }
+
+        .sub-headline {
+            font-size: 20px;
+            margin-top: 24px;
+        }
+        
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--accent-primary-hover);
+        }
+
+        /* ---------------------------------- */
+        /* ----- Components --------------- */
+        /* ---------------------------------- */
+        .btn {
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-primary-hover);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--card-bg);
+            border-color: #D1D5DB;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Header / Navigation ------ */
+        /* ---------------------------------- */
+        .main-header {
+            background-color: rgba(249, 250, 251, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100; 
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--text-primary);
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Hero Section ------------- */
+        /* ---------------------------------- */
+        .hero-section {
+            text-align: center;
+            padding-top: 120px;
+            padding-bottom: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-section h1 {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-section .sub-headline {
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-section .cta-button {
+            margin-top: 40px;
+            font-size: 18px;
+            padding: 18px 36px;
+        }
+        
+        .background-gradient {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1), rgba(99, 102, 241, 0.1) 40%, rgba(192, 132, 252, 0.1) 80%);
+            filter: blur(100px);
+            opacity: 0.5;
+            z-index: 1;
+        }
+        
+        /* ---------------------------------- */
+        /* ----- Features Section --------- */
+        /* ---------------------------------- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 64px;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: left;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+        }
+
+        .feature-card .icon {
+            margin-bottom: 24px;
+            background-color: #ECFDF5;
+            color: var(--accent-primary);
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feature-card p {
+            font-size: 16px;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Pricing Section ---------- */
+        /* ---------------------------------- */
+        .pricing-section .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .pricing-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+
+        .price {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .price .period {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .pioneer-offer {
+            background-color: #E0F2F1;
+            border: 1px solid #B2DFDB;
+            color: #00796B;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .pioneer-offer strong {
+            color: #004D40;
+        }
+        
+        /* ---------------------------------- */
+        /* ----- Footer ------------------- */
+        /* ---------------------------------- */
+        .main-footer {
+            padding: 48px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .main-footer p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0 auto;
+        }
+
+        /* ---------------------------------- */
+        /* ----- Responsive Design -------- */
+        /* ---------------------------------- */
+        @media (max-width: 992px) {
+            h1 { font-size: 48px; }
+            h2 { font-size: 36px; }
+        }
+
+        @media (max-width: 768px) {
+            main > section {
+                padding: 64px 0;
+            }
+            
+            h1 { font-size: 36px; }
+            h2 { font-size: 30px; margin-bottom: 48px; }
+            
+            .main-nav { display: none; } /* Simple responsive approach */
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .pricing-card {
+                padding: 32px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ======================= -->
+    <!--      Header             -->
+    <!-- ======================= -->
+    <header class="main-header">
+        <div class="container">
+            <a href="#" class="logo">MindWise</a>
+            <nav class="main-nav">
+                <ul>
+                    <li class="nav-links"><a href="#features">Features</a></li>
+                    <li class="nav-links"><a href="pricing.html">Pricing</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <a href="register.html" class="btn btn-primary">Start Your $1 Trial</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ======================= -->
+        <!--      Hero Section       -->
+        <!-- ======================= -->
+        <section class="hero-section" id="hero">
+            <div class="background-gradient"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Turn Your Website into a 24/7 Sales and Support Agent.</h1>
+                    <p class="sub-headline">Add a custom AI chatbot to your site with one line of code that instantly answers visitor questions and converts them into customers.</p>
+                    <a href="register.html" class="btn btn-primary cta-button">Start Your $1 Trial</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!--    Features Section     -->
+        <!-- ======================= -->
+        <section class="features-section" id="features">
+            <div class="container">
+                <h2>Powerful Features, Effortless Setup</h2>
+                <div class="features-grid">
+                    <!-- Feature 1 -->
+                    <div class="feature-card">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        </div>
+                        <h3>Instant Knowledge Base</h3>
+                        <p>Our AI automatically scans and learns your entire website, help center, and product documentation in minutes. It provides instant, accurate answers to 80% of customer questions, freeing up your team.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="feature-card">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a2 2 0 0 1 2 2v2H4v-2a2 2 0 0 1 2-2Z"></path><path d="M9 13h6"></path><path d="m12 16 1.5-1.5"></path><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7"></path><path d="M12 4v-1.5"></path></svg>
+                        </div>
+                        <h3>Smart Human Handoff</h3>
+                        <p>When the AI detects a complex issue or a high-value sales lead, it seamlessly escalates the conversation by creating a detailed email ticket, ensuring your agents have all the context they need.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="feature-card">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        </div>
+                        <h3>Code-Free Setup</h3>
+                        <p>Get your AI assistant live in minutes, not months. Simply copy and paste one line of code onto your website to deploy your custom-trained chatbot. No complex configuration or developer time required.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!--    Pricing Section      -->
+        <!-- ======================= -->
+        <section class="pricing-section" id="pricing">
+            <div class="container">
+                <h2>Simple, Transparent Pricing</h2>
+                <div class="pricing-card">
+                    <p class="price">$99<span class="period">/month</span></p>
+                    <p style="margin-top: 16px;">Unlock the full power of AI-driven customer engagement.</p>
+                    
+                    <div class="pioneer-offer">
+                        <p style="font-size: 16px; color: #00695C;"><strong>Special Limited-Time Offer:</strong> Join our <strong>Pioneer Program</strong> and get your <strong>First Month for just $1</strong>.</p>
+                    </div>
+                    
+                    <a href="register.html" class="btn btn-primary" style="width: 100%; padding: 16px;">Claim Your $1 Offer</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ======================= -->
+    <!--      Footer             -->
+    <!-- ======================= -->
+    <footer class="main-footer">
+        <div class="container">
+           <p>© 2025 MindWise. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+        </div>
+    </footer>
+
+</body>
+</html>
